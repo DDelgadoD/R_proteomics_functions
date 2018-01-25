@@ -2,6 +2,12 @@
 #Funciones v0.2 rev240118
 ##########
 
+## Cálculo del coeficiente de variación
+var.coef <- function(x){
+  sd(x, na.rm=TRUE)/mean(x, na.rm=TRUE)*100
+}
+
+## Llamar a una libreria o instalar si no se tiene el paquete
 installIfNot <- function (pckgName){
   if(!(require(pckgName, character.only=TRUE))){
     install.packages(pckgName)
