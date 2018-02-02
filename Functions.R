@@ -2,6 +2,15 @@
 #Funciones v0.2 rev240118
 ##########
 
+###
+### Funcion: NFreq(@x:dataframe $x:data.table)    
+###
+NFreq <- function(Lecturas, column){
+  Lecturas<- table(unlist(Lecturas[,column]))
+  Lecturas<- as.data.frame(Lecturas)
+  return(Lecturas)
+}
+
 ## Cálculo del coeficiente de variación
 var.coef <- function(x){
   sd(x, na.rm=TRUE)/mean(x, na.rm=TRUE)*100
