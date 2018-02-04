@@ -1,9 +1,9 @@
 ##########
-#Funciones v0.2 rev240118
+#Funciones v0.2 rev040218
 ##########
 
 ###
-### Funcion: NFreq(@x:dataframe $x:data.table)    
+### Funcion: NFreq(@Lecturas:dataframe @column:integer $Lecturas:dataframe)    
 ###
 NFreq <- function(Lecturas, column){
   Lecturas<- table(unlist(Lecturas[,column]))
