@@ -23,7 +23,7 @@ installIfNot <- function (pckgName){
   }
 }
 
-getNamesUniprot <- function(x){
+getNamesUniprotBasic <- function(x){
   
   protNames <- data.frame( ProtID = character(), ProtName = character(), ProtFunct = character())
   
@@ -197,4 +197,96 @@ Datos<- function(Name, Run, Prot, carpeta){
   return(listar)
   
 }
+
+
+# Nombre: getNamesUniprot
+# Funci?n que devuelve un data.frame con el nombre y la funci?n de una prote?na humana. Requiere connexi?n a internet.
+#
+# @param: x: data.frame de una sola columna donde se indique el n?mero de proteina humana que deseamos buscar
+# @return: protNames: data.frame de 3 columnas donde se indica el n?mero de prote?na humana, el nombre y su principal funci?n
+
+getNamesUniprot <- function(x){
+  
+  # Preparamos el data.frame para alojar los datos de salida
+  protNames <- data.frame( ProtID = character(), ProtName = character(), GO_C = character(), GO_F = character(), GO_P = character(), ProtFunct=character())
+  
+  # Recorremos el data.frame de entrada para obtener los datos
+  for (i in 1:dim(x)[1]){
+    # Probamos la conexi?n
+    try(url <- paste ("http://www.uniprot.org/uniprot/", x[i,], ".xml", sep=""))
+    # Obtenemos los datos
+    data <- xmlInternalTreeParse(url, useInternal=TRUE)
+    
+    
+    # Los convertimos en lista para acceder a los nodos
+    xml_data <- xmlToList(data)
+    # Rellenamos el nombre por si no tiene correspondencia
+    ProtName <- "Not available"
+    #Probamos a asignar los datos
+    try(ProtName <- as.character(xml_data$entry$gene$name$text[xml_data$entry$gene$name$.attrs=="primary"]))
+    try(ProtFunct<- as.character(xml_data$entry$comment$text[1]))
+    
+    # Si el string funci?n tiene largo 0 indicamos que no hay funci?n listada
+    if (length(ProtFunct) == 0L){
+      ProtFunct <- "not listed"
+    }
+    
+    Pr <- as.list(xml_data$entry)
+    Pr <- Pr[names(Pr)=="dbReference"]
+    Pr <- Pr[sapply(Pr, function(x) any(unlist(x) == "GO"))]
+    Pr <- as.data.frame(sapply(Pr,function(x) unlist(x$property["value"])))
+    
+    c<-paste(gsub("C:","",Pr[grep("^C", Pr[,1]),]), collapse = ", ")
+    f<-paste(gsub("F:","",Pr[grep("^F", Pr[,1]),]), collapse = ", ")
+    p<-paste(gsub("P:","",Pr[grep("^P", Pr[,1]),]), collapse = ", ")
+    
+    # Creamos una fila 
+    name <-data.frame( ProtID = as.character(x[i,]),ProtName=ProtName, GO_C=c,GO_F=f,GO_P=p,ProtFunct=ProtFunct)
+    # A?adimos la fila a el data.frame que hemos creado
+    protNames <- rbind(protNames, name)
+    
+    # Mostramos un mensaje de progreso
+    cat("     \r",round(i/(dim(x)[1])*100, 2), "%   ")
+    
+  }
+  # Devolvemos el data.frame finalizado
+  return(protNames)
+  
+}
+
+# Nombre: binder
+# Funci?n que devuelve un data.frame con una sola columna que auna los valores de un data.frame de dos columnas
+#
+# @param: nX: data.frame de dos columnas 
+# @return: bind: data.frame de 1 columna
+
+binder<-function(nX){
+  a <- as.data.frame(nX[,1])
+  b <- as.data.frame(nX[,2])
+  colnames(a)[1]<- "Prote?na"
+  colnames(b)[1]<- "Prote?na"
+  bind<-as.data.frame(rbind(a,b))
+  
+  return(bind)
+}
+
+
+filtering <- function(x, filter, where){
+  
+  if (where=="c"){
+    # Filtrar en GO C
+    f<-ProteinGO[grep(filter, ProteinGO[,3]),]
+  }else if (where=="f"){
+    # Filtrar en GO F
+    f<-ProteinGO[grep(filter, ProteinGO[,4]),]
+  } else if (where == "p"){
+    # Filtrar en GO P
+    f<-ProteinGO[grep(filter, ProteinGO[,5]),]
+  }else{
+    f <- "Use a character for 'filter' and 'where' and lowercase for 'where'. Ex: filtering(data.frame,'axon','c') "
+  }
+  
+  return(f)
+}
+
 
