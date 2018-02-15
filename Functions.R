@@ -352,3 +352,18 @@ JohnM <- function(E){
   }
   return(E) 
 }
+
+correlate <- function(x, met){
+  
+  mCor <- data.frame(Prot= character(), sign= numeric(), corr= numeric(), stringsAsFactors = FALSE )
+  
+  for(i in 2:ncol(x)-1){
+    v <- cor.test(x[,i], x[,1], use="complete.obs", method=met)
+    a <- v$estimate
+    b <- v$p.value
+    dat <- data.frame(Prot= colnames(x)[i], sign= round(b[1], digits=3), corr= round(a[1], digits=3),corrA= abs(round(a[1], digits=3)), stringsAsFactors = FALSE)
+    mCor <-rbind(mCor, dat)
+  }
+  
+  return(mCor)
+}
