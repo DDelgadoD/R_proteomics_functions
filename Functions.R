@@ -1,5 +1,5 @@
 ##########
-#Funciones v0.2 rev040218
+#Funciones v0.3 rev150218
 ##########
 
 ###
@@ -270,6 +270,7 @@ binder<-function(nX){
   return(bind)
 }
 
+# Aplicar filtro
 
 filtering <- function(x, filter, where){
   
@@ -289,4 +290,65 @@ filtering <- function(x, filter, where){
   return(f)
 }
 
+# Comprobar la normalidad
+Normal<- function(E){
+  LoQueEsNormal <- data.frame(Proteina=character(), S.W=character(), pvalor=numeric(), A.D= character(), porcentaje=numeric(), stringsAsFactors=FALSE) #Creamos una tabla vac?a
+  
+  for (i in 1:ncol(E)){
+    # Realizamos el test
+    Alpha <- shapiro.test(as.array(E[,i]))
+    P <- Alpha$p.value
+    ADT <- ad.test(E[,i])
+    AD <- ADT$p.value
+    
+    if (P>=0.05){
+      Wii <- data.frame(Proteina = colnames(E)[i], S.W= "Sí", pvalor=round(P, 4), A.D= "", porcentaje = AD*100)  
+    }else{
+      Wii <- data.frame(Proteina = colnames(E)[i], S.W = "No", pvalor=round(P, 4), A.D= "", porcentaje = AD*100) 
+    }
+    
+    if(AD > 0.5){
+      Wii$A.D = "Sí"
+    }else{
+      Wii$A.D = "No"
+    }
+    
+    LoQueEsNormal <- rbind(LoQueEsNormal, Wii)
+  }
+  
+  LoQueEsNormal
+}
 
+# Gràficos de densidad
+densitedVar <- function(E){
+  opar = par() 
+  pareo()
+  
+  ytpos = (apply(E,2,min)+3*apply(E,2,max))/4
+  cn = colnames(E)
+  
+  for(i in 1:ncol(E)){
+    densityPlot(E[,i], ylab= colnames(E)[i])
+    text(-1.5, ytpos[i] ,cn[i])
+    
+  } 
+  par(opar)
+}
+
+## Adaptamos la salida gràfica para que muestre 16 gràficos
+pareo <-function(){
+  
+  par(mfrow=c(4,4))
+  par(mar=c(0.5,0.5,0.5,0.5))
+  par(oma=c(1,1,1,1))
+}
+
+#Normalización por Johnson
+JohnM <- function(E){
+  
+  for (i in 1:ncol(E)){
+    x_johnson <- RE.Johnson(E[,i])
+    E[,i] <- as.data.frame(x_johnson$transformed)
+  }
+  return(E) 
+}
