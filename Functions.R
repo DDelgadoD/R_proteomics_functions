@@ -367,3 +367,9 @@ correlate <- function(x, met){
   
   return(mCor)
 }
+
+pHCorr <- function(x, met){
+  xF <- x
+  xF$FDR = round(p.adjust(x$sign, method=met ), digits=5 )
+  return(xF)
+}
