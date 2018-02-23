@@ -43,7 +43,7 @@ getNamesUniprotBasic <- function(x){
     name <-data.frame( ProtID = as.character(x[i,]),ProtName=ProtName, ProtFunct=ProtFunct)
     protNames <- rbind(protNames, name)
     
-    cat("     \r",round(i/(dim(Proteinas)[1])*100, 2), "%")
+    cat("     \r",round(i/(dim(x)[1])*100, 2), "%")
     
   }
   
