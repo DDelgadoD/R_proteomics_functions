@@ -373,3 +373,11 @@ pHCorr <- function(x, met){
   xF$FDR = round(p.adjust(x$sign, method=met ), digits=5 )
   return(xF)
 }
+
+substrRight <- function(x, n){
+  substr(x, nchar(x)-n+1, nchar(x))
+}
+
+substrLeft <- function(x, n){
+  substr(x, 1, n)
+}
