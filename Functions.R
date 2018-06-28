@@ -38,7 +38,7 @@ getNamesUniprotBasic <- function(x){
     
     if(x[i,]=="P00761"){
       ProtFunct<- "Pig Tryptase used to digest samples"
-      Protname<- "!!!! PIG TRYPTASE"
+      ProtName<- "!!!! PIG TRYPTASE"
     }else{
     
       ProtName <- "Not available"
