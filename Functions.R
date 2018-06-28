@@ -24,13 +24,16 @@ installIfNot <- function (pckgName){
 }
 
 getNamesUniprotBasic <- function(x){
+ 
+  installIfNot("XML")
+  installIfNot(httr)
   
   protNames <- data.frame( ProtID = character(), ProtName = character(), ProtFunct = character())
   
   for (i in 1:dim(x)[1]){
     
     try(url <- paste ("http://www.uniprot.org/uniprot/", x[i,], ".xml", sep=""))
-    data <- xmlParse(url)
+    data <- xmlParse(rawToChar(GET(url)$content))
     xml_data <- xmlToList(data)
     
     ProtName <- "Not available"
