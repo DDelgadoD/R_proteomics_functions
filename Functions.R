@@ -26,7 +26,7 @@ installIfNot <- function (pckgName){
 getNamesUniprotBasic <- function(x){
  
   installIfNot("XML")
-  installIfNot(httr)
+  installIfNot("httr")
   
   protNames <- data.frame( ProtID = character(), ProtName = character(), ProtFunct = character())
   
