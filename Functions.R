@@ -36,12 +36,17 @@ getNamesUniprotBasic <- function(x){
     data <- xmlParse(rawToChar(GET(url)$content))
     xml_data <- xmlToList(data)
     
-    ProtName <- "Not available"
+    if(x[i,]=="P00761"){
+      ProtFunct<- "Pig Tryptase used to digest samples"
+      Protname<- "!!!! PIG TRYPTASE"
+    }else{
     
-    try(ProtFunct<- as.character(xml_data$entry$comment$text[1]))
-    try(ProtName <- as.character(xml_data$entry$gene$name$text[xml_data$entry$gene$name$.attrs=="primary"]))
+      ProtName <- "Not available"
+      try(ProtFunct<- as.character(xml_data$entry$comment$text[1]))
+      try(ProtName <- as.character(xml_data$entry$gene$name$text[xml_data$entry$gene$name$.attrs=="primary"]))
     
-    if (length(ProtFunct) == 0L){ProtFunct <- "not listed"}
+      if (length(ProtFunct) == 0L){ProtFunct <- "not listed"}
+    }
     
     name <-data.frame( ProtID = as.character(x[i,]),ProtName=ProtName, ProtFunct=ProtFunct)
     protNames <- rbind(protNames, name)
