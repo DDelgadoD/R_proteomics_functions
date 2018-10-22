@@ -1,5 +1,5 @@
 ##########
-#Funciones v0.3 rev150218
+#Funciones v0.3 rev221018
 ##########
 
 ###
@@ -41,11 +41,12 @@ getNamesUniprotBasic <- function(x){
       ProtName<- "!!!! PIG TRYPTASE"
     }else{
     
-      ProtName <- "Not available"
+      ProtName <- "not available"
       try(ProtFunct<- as.character(xml_data$entry$comment$text[1]))
       try(ProtName <- as.character(xml_data$entry$gene$name$text[xml_data$entry$gene$name$.attrs=="primary"]))
     
       if (length(ProtFunct) == 0L){ProtFunct <- "not listed"}
+      if (length(ProtName) == 0L){ProtFunct <- "not available"}
     }
     
     name <-data.frame( ProtID = as.character(x[i,]),ProtName=ProtName, ProtFunct=ProtFunct)
