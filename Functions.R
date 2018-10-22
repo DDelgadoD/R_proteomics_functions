@@ -33,21 +33,29 @@ getNamesUniprotBasic <- function(x){
   for (i in 1:dim(x)[1]){
     
     try(url <- paste ("http://www.uniprot.org/uniprot/", x[i,], ".xml", sep=""))
-    data <- xmlParse(rawToChar(GET(url)$content))
-    xml_data <- xmlToList(data)
-    
-    if(x[i,]=="P00761"){
-      ProtFunct<- "Pig Tryptase used to digest samples"
-      ProtName<- "!!!! PIG TRYPTASE"
+    if(url.exists(url)){
+      data <- xmlParse(rawToChar(GET(url)$content))
+      xml_data <- xmlToList(data)
+      
+      if(x[i,]=="P00761"){
+        ProtFunct<- "Pig Tryptase used to digest samples"
+        ProtName<- "!!!! PIG TRYPTASE"
+      }else{
+      
+        ProtName <- "not available"
+        try(ProtFunct<- as.character(xml_data$entry$comment$text[1]))
+        try(ProtName <- as.character(xml_data$entry$gene$name$text[xml_data$entry$gene$name$.attrs=="primary"]))
+      
+        if (length(ProtFunct) == 0L){ProtFunct <- "not listed"}
+        if (length(ProtName) == 0L){ProtName <- "not available"}
+      }
     }else{
-    
-      ProtName <- "not available"
-      try(ProtFunct<- as.character(xml_data$entry$comment$text[1]))
-      try(ProtName <- as.character(xml_data$entry$gene$name$text[xml_data$entry$gene$name$.attrs=="primary"]))
-    
-      if (length(ProtFunct) == 0L){ProtFunct <- "not listed"}
-      if (length(ProtName) == 0L){ProtName <- "not available"}
-    }
+      ProtName <- "Not Prot or Obsolete"
+      ProtFunct <- ""
+      c<-""
+      f<-""
+      p<-""
+    }  
     
     name <-data.frame( ProtID = as.character(x[i,]),ProtName=ProtName, ProtFunct=ProtFunct)
     protNames <- rbind(protNames, name)
