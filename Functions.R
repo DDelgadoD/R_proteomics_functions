@@ -35,8 +35,8 @@ getNamesUniprotBasic <- function(x){
     try(url <- paste ("http://www.uniprot.org/uniprot/", x[i,], ".xml", sep=""))
     
     if(url.exists(url)){
-      try(datar <- xmlInternalTreeParse(url, useInternal=TRUE), silent=TRUE)
-      xml_data <- xmlToList(datar)
+      try(data <- htmlParse(rawToChar(GET(url)$content)), silent=TRUE)
+      xml_data <- xmlToList(data)
       
       if(x[i,]=="P00761"){
         ProtFunct<- "Pig Tryptase used to digest samples"
