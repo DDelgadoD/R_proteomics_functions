@@ -34,7 +34,7 @@ getNamesUniprotBasic <- function(x){
     
     try(url <- paste ("http://www.uniprot.org/uniprot/", x[i,], ".xml", sep=""))
     if(url.exists(url)){
-      data <- xmlParse(rawToChar(GET(url)$content))
+      try(data <- xmlInternalTreeParse(url, useInternal=TRUE), silent=TRUE)
       xml_data <- xmlToList(data)
       
       if(x[i,]=="P00761"){
